@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 using namespace std;
 
 //estrutura da tarefa
@@ -23,7 +24,7 @@ void adicionarTarefa(const string& descricao) {
 //funcao para listar todas as tarefas
 void listarTarefas() {
     for (const auto& t : tarefas) {
-        cout << t.id << " - " << t.descricao << (t.concluida ? "[concluida]" : "pendente") << "\n";
+        cout << t.id << " - " << t.descricao << (t.concluida ? "[concluida]" : "[pendente]") << "\n";
     }
 }
 
@@ -51,17 +52,88 @@ void removerTarefa(int id) {
     cout << "tarefa com ID " << id << " não foi encontrada.\n";
 }
 
+//funcao para salvar tarefas em um arquivo
+void salvarTarefasEmArquivo(const string& arquivoTxt) {
+    ofstream arquivo(arquivoTxt);
+    for (const auto& t : tarefas) {
+        arquivo << t.id << ";" << t.descricao << ";" << t.concluida << "\n";
+    }
+    arquivo.close();
+}
+
+//funcao para carregar tarefas
+void carregarTarefas(const string& carregarTxt) {
+    ifstream arquivo(carregarTxt);
+    if (!arquivo.is_open()) return;
+    tarefas.clear();
+    proximoId = 1;
+    string linha;
+    while (getline(arquivo, linha)) {
+        int id;
+        string descricao;
+        bool concluida;
+        size_t p1 = linha.find(';');
+        size_t p2 = linha.rfind(';');
+        if (p1 != string::npos && p2 != string::npos && p1 != p2) {
+            id = stoi(linha.substr(0, p1));
+            descricao = linha.substr(p1 + 1, p2 - p1 - 1);
+            concluida = stoi(linha.substr(p2 + 1));
+            tarefas.push_back({id, descricao, concluida});
+            if (id >= proximoId) proximoId = id + 1;
+        }
+    }
+    arquivo.close();
+}
+
 //funcao principal
 int main() {
-    adicionarTarefa("estudar c++");
-    listarTarefas();
+    
+    int opcao;
+    while(true) {
+        cout << "\n===== MENU =====\n";
+        cout << "1. Adicionar tarefa\n";
+        cout << "2. Listar tarefas\n";
+        cout << "3. Concluir tarefa\n";
+        cout << "4. Remover tarefa\n";
+        cout << "5. Sair\n";
+        cout << "Escolha uma opcao: ";
+        cin >> opcao;
 
-    std::cout << "\nConcluindo tarefa 1...\n";
-    concluirTarefa(1);
-    listarTarefas();
+        switch(opcao) {
+            case 1: {
+                cin.ignore(); // para limpar buffer do cin
+                string descricao;
+                cout << "Digite a descricao da tarefa: ";
+                getline(cin, descricao);
+                adicionarTarefa(descricao);
+                break;
+            }
+            case 2: {
+                listarTarefas();
+                break;
+            }
+            case 3: {
+                int id;
+                cout << "digite o id da tarefa " << endl;
+                cin >> id;
+                concluirTarefa(id);
+                break;
+            }
+            case 4: {
+                int id;
+                cout << "digite o ID da tarefa que voce deseja remover" << endl;
+                cin >> id;
+                removerTarefa(id);
+                break;
+            }
+            case 5: {
+                cout << "Saindo do programa...\n";
+                return 0;
+            }
+            default:
+                cout << "Opcao invalida, tente novamente.\n";
+        }
+    }
 
-    std::cout << "\nRemovendo tarefa 2...\n";
-    removerTarefa(2);
-    listarTarefas();
     return 0;
 }
