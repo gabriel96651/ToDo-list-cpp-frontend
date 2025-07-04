@@ -62,8 +62,8 @@ void salvarTarefasEmArquivo(const string& arquivoTxt) {
 }
 
 //funcao para carregar tarefas
-void carregarTarefas(const string& carregarTxt) {
-    ifstream arquivo(carregarTxt);
+void carregarTarefas(const string& arquivoTxt) {
+    ifstream arquivo(arquivoTxt);
     if (!arquivo.is_open()) return;
     tarefas.clear();
     proximoId = 1;
@@ -87,9 +87,10 @@ void carregarTarefas(const string& carregarTxt) {
 
 //funcao principal
 int main() {
-    
+    carregarTarefas("tarefas.txt");  // carrega tarefas ao iniciar
+
     int opcao;
-    while(true) {
+    while (true) {
         cout << "\n===== MENU =====\n";
         cout << "1. Adicionar tarefa\n";
         cout << "2. Listar tarefas\n";
@@ -99,13 +100,14 @@ int main() {
         cout << "Escolha uma opcao: ";
         cin >> opcao;
 
-        switch(opcao) {
+        switch (opcao) {
             case 1: {
-                cin.ignore(); // para limpar buffer do cin
+                cin.ignore();
                 string descricao;
                 cout << "Digite a descricao da tarefa: ";
                 getline(cin, descricao);
                 adicionarTarefa(descricao);
+                salvarTarefasEmArquivo("tarefas.txt"); // salva imediatamente
                 break;
             }
             case 2: {
@@ -114,16 +116,18 @@ int main() {
             }
             case 3: {
                 int id;
-                cout << "digite o id da tarefa " << endl;
+                cout << "Digite o ID da tarefa que deseja concluir: ";
                 cin >> id;
                 concluirTarefa(id);
+                salvarTarefasEmArquivo("tarefas.txt"); // salva imediatamente
                 break;
             }
             case 4: {
                 int id;
-                cout << "digite o ID da tarefa que voce deseja remover" << endl;
+                cout << "Digite o ID da tarefa que deseja remover: ";
                 cin >> id;
                 removerTarefa(id);
+                salvarTarefasEmArquivo("tarefas.txt"); // salva imediatamente
                 break;
             }
             case 5: {
