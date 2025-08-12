@@ -1,2 +1,6 @@
 1;estudar matematica;1
-2;estudar ciencias;0
+3;roteiro;1
+4;ler livro;0
+5;estudar ingles;0
+6;estudar matematica;0
+7;estudar;0
